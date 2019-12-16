@@ -1,4 +1,4 @@
-# radix-image-builder
+# radix-image-builder.
 
 The radix-image-builder gives radix-pipeline access to build the images using ACR build functionality.
 
