@@ -18,17 +18,17 @@ jobs:
           password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
       - run: |
           docker push radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
-      - uses: azure/docker-login@v1
-        with:
-          login-server: radixprod.azurecr.io
-          username: ${{ secrets.PROD_REGISTRY_USERNAME }}
-          password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
-      - run: |
-          docker push radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
-      - uses: azure/docker-login@v1
-        with:
-          login-server: radixus.azurecr.io
-          username: ${{ secrets.PROD_REGISTRY_USERNAME }}
-          password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
-      - run: |
-          docker push radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      # - uses: azure/docker-login@v1
+      #   with:
+      #     login-server: radixprod.azurecr.io
+      #     username: ${{ secrets.PROD_REGISTRY_USERNAME }}
+      #     password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
+      # - run: |
+      #     docker push radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      # - uses: azure/docker-login@v1
+      #   with:
+      #     login-server: radixus.azurecr.io
+      #     username: ${{ secrets.PROD_REGISTRY_USERNAME }}
+      #     password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
+      # - run: |
+      #     docker push radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
