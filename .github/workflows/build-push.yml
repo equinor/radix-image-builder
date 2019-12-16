@@ -1,0 +1,34 @@
+name: radix-image-builder-build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: Build-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          docker build . -t radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      - uses: azure/docker-login@v1
+        with:
+          login-server: radixdev.azurecr.io
+          username: ${{ secrets.DEV_REGISTRY_USERNAME }}
+          password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      - run: |
+          docker push radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      - uses: azure/docker-login@v1
+        with:
+          login-server: radixprod.azurecr.io
+          username: ${{ secrets.PROD_REGISTRY_USERNAME }}
+          password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
+      - run: |
+          docker push radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      - uses: azure/docker-login@v1
+        with:
+          login-server: radixus.azurecr.io
+          username: ${{ secrets.PROD_REGISTRY_USERNAME }}
+          password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
+      - run: |
+          docker push radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
