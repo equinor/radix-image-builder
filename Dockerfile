@@ -1,4 +1,4 @@
-FROM microsoft/azure-cli:2.0.54
+FROM mcr.microsoft.com/azure-cli:2.9.1
 WORKDIR /radix-image-builder/
 COPY build_acr.sh build_acr.sh
 
