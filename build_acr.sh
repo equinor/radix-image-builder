@@ -3,7 +3,7 @@ function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
   local delimiter='\='
   local buildArgs=''
-  local buildCommand="az acr build -t ${IMAGE} -t ${CLUSTERTYPE_IMAGE} -t ${CLUSTERNAME_IMAGE} ${NO_PUSH} -r ${DOCKER_REGISTRY} ${CONTEXT} -f ${CONTEXT}${DOCKER_FILE_NAME}"
+  local buildCommand="az acr build -t ${IMAGE} -t ${CLUSTERTYPE_IMAGE} -t ${CLUSTERNAME_IMAGE} ${NO_PUSH} -r ${DOCKER_REGISTRY} ${CONTEXT} -f ${CONTEXT}${DOCKER_FILE_NAME} --subscription ${SUBSCRIPTION_ID}"
 
   local line
   local keyValue
