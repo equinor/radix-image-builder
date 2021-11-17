@@ -26,6 +26,13 @@ function GetBuildCommand() {
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
+  if [[ -n "${BRANCH}" ]]; then
+    buildArgs+="--build-arg BRANCH=\"$(echo ${BRANCH} | base64 | tr -d \\n)\" "
+  fi
+  if [[ -n "${TARGET_ENVIRONMENTS}" ]]; then
+    buildArgs+="--build-arg TARGET_ENVIRONMENTS=\"$(echo ${TARGET_ENVIRONMENTS} | base64 | tr -d \\n)\" "
+  fi
+
   buildCommand="$buildCommand $buildArgs"
   echo "$buildCommand"
 }

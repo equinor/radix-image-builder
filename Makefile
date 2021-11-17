@@ -1,6 +1,6 @@
 .PHONY: test build run-test-image
 build:
-	docker build -t radix-image-builder .
+	docker build -t radixdev.azurecr.io/radix-image-builder:dev .
 
 test:
 	rm -f ./test/credentials.json
@@ -13,8 +13,13 @@ test:
 		-e CLUSTERTYPE_IMAGE=radixdev.azurecr.io/radix-image-builder-test:2 \
 		-e CLUSTERNAME_IMAGE=radixdev.azurecr.io/radix-image-builder-test:3 \
 		-e SUBSCRIPTION_ID=16ede44b-1f74-40a5-b428-46cca9a5741b \
-		radix-image-builder
+		-e BRANCH=main \
+		-e TARGET_ENVIRONMENTS='dev,qa' \
+		radixdev.azurecr.io/radix-image-builder:dev
 	rm ./test/credentials.json
+
+push-dev:
+	docker push radixdev.azurecr.io/radix-image-builder:dev
 
 run-test-image:
 	docker run radixdev.azurecr.io/radix-image-builder-test:1
