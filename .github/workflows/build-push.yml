@@ -7,8 +7,7 @@ on:
 permissions:
   id-token: write
 jobs:
-  build:
-    name: Build-push
+  build-deploy-image-dev:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -25,6 +24,10 @@ jobs:
       - name: 'Push to radixdev'
       - run: |
           docker push radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+  build-deploy-image-prod:
+    if: github.ref == 'refs/heads/release'
+    runs-on: ubuntu-latest
+    steps:
       - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
