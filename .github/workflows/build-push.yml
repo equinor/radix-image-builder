@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - release
+permissions:
+  id-token: write
 jobs:
   build:
     name: Build-push
@@ -12,17 +14,25 @@ jobs:
       - uses: actions/checkout@v1
       - run: |
           docker build . -t radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
-      - uses: azure/docker-login@v1
+      - uses: azure/login@v1
         with:
-          login-server: radixdev.azurecr.io
-          username: ${{ secrets.DEV_REGISTRY_USERNAME }}
-          password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID_DEV }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_DEV }}
+      - name: 'Login to ACR radixdev'
+        run: |
+          az acr login --name radixdev
+      - name: 'Push to radixdev'
       - run: |
           docker push radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
-      - uses: azure/docker-login@v1
+      - uses: azure/login@v1
         with:
-          login-server: radixprod.azurecr.io
-          username: ${{ secrets.PROD_REGISTRY_USERNAME }}
-          password: ${{ secrets.PROD_REGISTRY_PASSWORD }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID_PROD }}
+      - name: 'Login to ACR radixprod'
+        run: |
+          az acr login --name radixprod
+      - name: 'Push to radixprod'
       - run: |
           docker push radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
