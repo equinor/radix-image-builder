@@ -24,12 +24,12 @@ jobs:
           az acr login --name radixdev
           docker push radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
   build-deploy-image-prod:
+    if: github.ref == 'refs/heads/release'
     name: Build-push
     runs-on: ubuntu-latest
     steps:
       - name: 'Login to prod'
-        if: github.ref == 'refs/heads/release'
-        uses: azure/login@v1
+      - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
