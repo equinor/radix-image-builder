@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - run: |
-          docker build . -t radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest -t radixus.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
-      - uses: azure/login@v1
+      - name: 'Build docker image'
+        run: |
+          docker build . -t radixdev.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
+      - name: 'Login to dev'
+        uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID_DEV }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -28,8 +30,12 @@ jobs:
     name: Build-push
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - name: 'Build docker image'
+        run: |
+          docker build . -t radixprod.azurecr.io/radix-image-builder:${GITHUB_REF##*/}-latest
       - name: 'Login to prod'
-      - uses: azure/login@v1
+        uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
