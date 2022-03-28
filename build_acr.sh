@@ -2,9 +2,15 @@
 function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
   local buildArgs=''
+  local ACR_TASK_NAME=''
+  if [[ "${NO_PUSH}" == "--no-push" ]]; then
+    ACR_TASK_NAME="radix-image-builder-no-push"
+  else
+    ACR_TASK_NAME="radix-image-builder"
+  fi
 
   local buildCommand="az acr task run \
-    --name radix-image-builder \
+    --name ${ACR_TASK_NAME} \
     --registry ${DOCKER_REGISTRY} \
     --context ${CONTEXT} \
     --file ${CONTEXT}${DOCKER_FILE_NAME} \
