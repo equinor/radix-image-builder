@@ -17,8 +17,7 @@ function GetBuildCommand() {
     --set IMAGE=${IMAGE} \
     --set CLUSTERTYPE_IMAGE=${CLUSTERTYPE_IMAGE} \
     --set CLUSTERNAME_IMAGE=${CLUSTERNAME_IMAGE} \
-    --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} \
-    --set CONTEXT=${CONTEXT} "
+    --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} "
   if [[ -n "${SUBSCRIPTION_ID}" ]]; then
     buildCommand+=" --subscription ${SUBSCRIPTION_ID} "
   fi
