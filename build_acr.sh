@@ -36,7 +36,7 @@ function GetBuildCommand() {
           secretName=${envBuildSecret#"$prefix"}
           secretValue="$(printenv $envBuildSecret | base64 | tr -d \\n)"
 
-          buildArgs+="--secret-arg $secretName=\"$secretValue\" "
+          buildArgs+="--set-secret $secretName=\"$secretValue\" "
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
