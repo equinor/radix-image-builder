@@ -35,18 +35,18 @@ function GetBuildCommand() {
           secretName=${envBuildSecret#"$prefix"}
           secretValue="$(printenv $envBuildSecret | base64 | tr -d \\n)"
 
-          buildArgs+="--secret-arg $secretName=\"$secretValue\" "
+          buildArgs+="--build-arg $secretName=\"$secretValue\" "
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
   if [[ -n "${BRANCH}" ]]; then
-    buildArgs+="--arg BRANCH=\"${BRANCH}\" "
+    buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
   fi
   if [[ -n "${TARGET_ENVIRONMENTS}" ]]; then
-    buildArgs+="--arg TARGET_ENVIRONMENTS=\"${TARGET_ENVIRONMENTS}\" "
+    buildArgs+="--build-arg TARGET_ENVIRONMENTS=\"${TARGET_ENVIRONMENTS}\" "
   fi
 
-  buildCommand="$buildCommand $buildArgs"
+  buildCommand+=" --set BUILD_ARGS=\"${buildArgs}\""
   echo "$buildCommand"
 }
 
