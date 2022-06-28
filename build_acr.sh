@@ -1,10 +1,31 @@
 #!/bin/bash
 function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
-  local delimiter='\='
   local buildArgs=''
+  local ACR_TASK_NAME='radix-image-builder'
+  echo "REMOTE_CONTEXT=${REMOTE_CONTEXT}"
+  if [[ "${NO_PUSH}" != "--no-push" ]];
+    PUSH="--push"
+  fi
+  if [[ "${CACHE_DISABLED}" == true ]]; then
+    CACHE="--no-cache"
+  fi
 
-  local buildCommand="az acr build -t ${IMAGE} -t ${CLUSTERTYPE_IMAGE} -t ${CLUSTERNAME_IMAGE} ${NO_PUSH} -r ${DOCKER_REGISTRY} ${CONTEXT} -f ${CONTEXT}${DOCKER_FILE_NAME} "
+  local buildCommand="az acr task run \
+        --name ${ACR_TASK_NAME} \
+        --registry ${AZ_RESOURCE_CONTAINER_REGISTRY} \
+        --context ${CONTEXT} \
+        --file ${CONTEXT}${DOCKER_FILE_NAME} \
+        --set REPOSITORY_NAME=${REPOSITORY_NAME} \
+        --set BRANCH=${BRANCH} \
+        --set TAG=${TAG} \
+        --set CLUSTER_TYPE=${CLUSTER_TYPE} \
+        --set CLUSTER_NAME=${CLUSTER_NAME} \
+        --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} \
+        --set BUILD_ARGS=${BUILD_ARGS} \
+        --set PUSH=${PUSH} \
+        --set CACHE=${CACHE}"
+
   if [[ -n "${SUBSCRIPTION_ID}" ]]; then
     buildCommand+=" --subscription ${SUBSCRIPTION_ID} "
   fi
@@ -20,7 +41,7 @@ function GetBuildCommand() {
           secretName=${envBuildSecret#"$prefix"}
           secretValue="$(printenv $envBuildSecret | base64 | tr -d \\n)"
 
-          buildArgs+="--secret-build-arg $secretName=\"$secretValue\" "
+          buildArgs+="--build-arg $secretName=\"$secretValue\" "
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
@@ -31,7 +52,7 @@ function GetBuildCommand() {
     buildArgs+="--build-arg TARGET_ENVIRONMENTS=\"${TARGET_ENVIRONMENTS}\" "
   fi
 
-  buildCommand="$buildCommand $buildArgs"
+  buildCommand+=" --set BUILD_ARGS=\"${buildArgs}\""
   echo "$buildCommand"
 }
 
