@@ -9,6 +9,8 @@ function GetBuildCommand() {
   fi
   if [[ "${CACHE_DISABLED}" == true ]]; then
     CACHE="--no-cache"
+  else
+    CACHE_TO_OPTIONS="--cache-to=type=registry,ref=${AZ_RESOURCE_CONTAINER_REGISTRY}/${REPOSITORY_NAME}:radix-cache-${BRANCH},mode=max"
   fi
 
   local buildCommand="az acr task run \
@@ -24,7 +26,8 @@ function GetBuildCommand() {
         --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} \
         --set BUILD_ARGS=${BUILD_ARGS} \
         --set PUSH=${PUSH} \
-        --set CACHE=${CACHE}"
+        --set CACHE=${CACHE} \
+        --set CACHE_TO_OPTIONS=${CACHE_TO_OPTIONS}"
 
   if [[ -n "${SUBSCRIPTION_ID}" ]]; then
     buildCommand+=" --subscription ${SUBSCRIPTION_ID} "
