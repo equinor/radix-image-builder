@@ -7,6 +7,7 @@ function GetBuildCommand() {
   if [[ "${NO_PUSH}" != "--no-push" ]];
     PUSH="--push"
   fi
+  CACHE_DISABLED=true
   if [[ "${CACHE_DISABLED}" == true ]]; then
     CACHE="--no-cache"
   else
