@@ -13,6 +13,12 @@ function GetBuildCommand() {
   local envBuildSecret
   local secretName
   local secretValue
+  
+  if [[ -z "${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}" ]]; then
+    export BUILD_SECRET_RADIX_GIT_COMMIT_HASH=$(git --git-dir ${CONTEXT}.git rev-parse HEAD)
+   #  git tag --points-at ${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}
+  fi
+
   while read -r line; do
       if [[ "$line" ]]; then
           keyValue=(${line//=/ })
