@@ -15,9 +15,13 @@ function GetBuildCommand() {
   local secretValue
   
   if [[ -z "${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}" ]]; then
-    export BUILD_SECRET_RADIX_GIT_COMMIT_HASH=$(git --git-dir ${CONTEXT}.git rev-parse HEAD)
-   #  git tag --points-at ${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}
+    export RADIX_GIT_COMMIT_HASH=$(git --git-dir ${CONTEXT}.git rev-parse HEAD)
+  else
+    export RADIX_GIT_COMMIT_HASH=${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}
   fi
+
+  unset BUILD_SECRET_RADIX_GIT_COMMIT_HASH
+  TEMP_RADIX_GIT_COMMIT_TAGS=$(git --git-dir ${CONTEXT}.git tag --points-at ${RADIX_GIT_COMMIT_HASH} 2>/dev/null | tr '\n' ' ' | xargs)
 
   while read -r line; do
       if [[ "$line" ]]; then
@@ -29,6 +33,13 @@ function GetBuildCommand() {
           buildArgs+="--secret-build-arg $secretName=\"$secretValue\" "
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
+
+  buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=\"${RADIX_GIT_COMMIT_HASH}\" "
+  if [[ -z "${TEMP_RADIX_GIT_COMMIT_TAGS}" ]]; then
+    buildArgs+="--build-arg RADIX_GIT_COMMIT_TAGS="
+  else 
+    buildArgs+="--build-arg RADIX_GIT_COMMIT_TAGS=\"\\\"(${TEMP_RADIX_GIT_COMMIT_TAGS})\\\"\" "
+  fi
 
   if [[ -n "${BRANCH}" ]]; then
     buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
@@ -48,5 +59,10 @@ if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
 azBuildCommand="$(GetBuildCommand)"
+#export azBuildCommand2="$(GetBuildCommand)"
+#env
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
-bash -c "$azBuildCommand"
+echo $azBuildCommand > /tmp/cmd.bash
+chmod 700 /tmp/cmd.bash
+cat /tmp/cmd.bash
+/bin/bash /tmp/cmd.bash
