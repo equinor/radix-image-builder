@@ -59,10 +59,5 @@ if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
 azBuildCommand="$(GetBuildCommand)"
-#export azBuildCommand2="$(GetBuildCommand)"
-#env
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
-echo $azBuildCommand > /tmp/cmd.bash
-chmod 700 /tmp/cmd.bash
-cat /tmp/cmd.bash
-/bin/bash /tmp/cmd.bash
+bash -c "$azBuildCommand"
