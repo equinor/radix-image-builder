@@ -13,15 +13,6 @@ function GetBuildCommand() {
   local envBuildSecret
   local secretName
   local secretValue
-  
-  if [[ -z "${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}" ]]; then
-    export RADIX_GIT_COMMIT_HASH=$(git --git-dir ${CONTEXT}.git rev-parse HEAD)
-  else
-    export RADIX_GIT_COMMIT_HASH=${BUILD_SECRET_RADIX_GIT_COMMIT_HASH}
-  fi
-
-  unset BUILD_SECRET_RADIX_GIT_COMMIT_HASH
-  TEMP_RADIX_GIT_COMMIT_TAGS=$(git --git-dir ${CONTEXT}.git tag --points-at ${RADIX_GIT_COMMIT_HASH} 2>/dev/null | tr '\n' ' ' | xargs)
 
   while read -r line; do
       if [[ "$line" ]]; then
@@ -34,13 +25,12 @@ function GetBuildCommand() {
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
-  buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=\"${RADIX_GIT_COMMIT_HASH}\" "
-  if [[ -z "${TEMP_RADIX_GIT_COMMIT_TAGS}" ]]; then
-    buildArgs+="--build-arg RADIX_GIT_COMMIT_TAGS="
-  else 
-    buildArgs+="--build-arg RADIX_GIT_COMMIT_TAGS=\"\\\"(${TEMP_RADIX_GIT_COMMIT_TAGS})\\\"\" "
+  if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
+    buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=\"${RADIX_GIT_COMMIT_HASH}\" "
   fi
-
+  if [[ -n "${RADIX_GIT_TAGS}" ]]; then
+    buildArgs+="--build-arg RADIX_GIT_TAGS=\"\\\"${RADIX_GIT_TAGS}\\\"\" "
+  fi
   if [[ -n "${BRANCH}" ]]; then
     buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
   fi
