@@ -31,6 +31,9 @@ function GetBuildCommand() {
   if [[ -n "${RADIX_GIT_TAGS}" ]]; then
     buildArgs+="--build-arg RADIX_GIT_TAGS=\"\\\"${RADIX_GIT_TAGS}\\\"\" "
   fi
+  if [[ -n "${RADIX_COMPONENT}" ]]; then
+      buildArgs+="--build-arg RADIX_COMPONENT=\"\\\"${RADIX_COMPONENT}\\\"\" "
+  fi
   if [[ -n "${BRANCH}" ]]; then
     buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
   fi
