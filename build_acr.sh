@@ -38,6 +38,7 @@ function GetBuildCommand() {
   local envBuildSecret
   local secretName
   local secretValue
+
   while read -r line; do
       if [[ "$line" ]]; then
           keyValue=(${line//=/ })
@@ -49,6 +50,12 @@ function GetBuildCommand() {
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
+  if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
+    buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=\"${RADIX_GIT_COMMIT_HASH}\" "
+  fi
+  if [[ -n "${RADIX_GIT_TAGS}" ]]; then
+    buildArgs+="--build-arg RADIX_GIT_TAGS=\"\\\"${RADIX_GIT_TAGS}\\\"\" "
+  fi
   if [[ -n "${BRANCH}" ]]; then
     buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
   fi
