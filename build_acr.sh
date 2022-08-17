@@ -1,10 +1,32 @@
 #!/bin/bash
 function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
-  local delimiter='\='
   local buildArgs=''
+  local ACR_TASK_NAME='radix-image-builder'
+  if [[ "${NO_PUSH}" != "--no-push" ]]; then
+    PUSH="--push"
+  fi
+  CACHE_DISABLED=true
+  if [[ "${CACHE_DISABLED}" == true ]]; then
+    CACHE="--no-cache"
+  else
+    CACHE_TO_OPTIONS="--cache-to=type=registry,ref=${DOCKER_REGISTRY}/${REPOSITORY_NAME}:radix-cache-${BRANCH},mode=max"
+  fi
 
-  local buildCommand="az acr build -t ${IMAGE} -t ${CLUSTERTYPE_IMAGE} -t ${CLUSTERNAME_IMAGE} ${NO_PUSH} -r ${DOCKER_REGISTRY} ${CONTEXT} -f ${CONTEXT}${DOCKER_FILE_NAME} "
+  local buildCommand="az acr task run \
+        --name ${ACR_TASK_NAME} \
+        --registry ${DOCKER_REGISTRY} \
+        --context ${CONTEXT} \
+        --file ${CONTEXT}${DOCKER_FILE_NAME} \
+        --set BRANCH=${BRANCH} \
+        --set IMAGE=${IMAGE} \
+        --set CLUSTERTYPE_IMAGE=${CLUSTERTYPE_IMAGE} \
+        --set CLUSTERNAME_IMAGE=${CLUSTERNAME_IMAGE} \
+        --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} \
+        --set PUSH=${PUSH} \
+        --set CACHE=${CACHE} \
+        --set CACHE_TO_OPTIONS=${CACHE_TO_OPTIONS}"
+
   if [[ -n "${SUBSCRIPTION_ID}" ]]; then
     buildCommand+=" --subscription ${SUBSCRIPTION_ID} "
   fi
@@ -21,24 +43,24 @@ function GetBuildCommand() {
           secretName=${envBuildSecret#"$prefix"}
           secretValue="$(printenv $envBuildSecret | base64 | tr -d \\n)"
 
-          buildArgs+="--secret-build-arg $secretName=\"$secretValue\" "
+          buildArgs+="--build-arg $secretName=\"$secretValue\" "
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
   if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
-    buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=\"${RADIX_GIT_COMMIT_HASH}\" "
+    buildArgs+="--build-arg RADIX_GIT_COMMIT_HASH=${RADIX_GIT_COMMIT_HASH} "
   fi
   if [[ -n "${RADIX_GIT_TAGS}" ]]; then
-    buildArgs+="--build-arg RADIX_GIT_TAGS=\"\\\"${RADIX_GIT_TAGS}\\\"\" "
+    buildArgs+="--build-arg RADIX_GIT_TAGS=\\\"${RADIX_GIT_TAGS}\\\" "
   fi
   if [[ -n "${BRANCH}" ]]; then
-    buildArgs+="--build-arg BRANCH=\"${BRANCH}\" "
+    buildArgs+="--build-arg BRANCH=${BRANCH} "
   fi
   if [[ -n "${TARGET_ENVIRONMENTS}" ]]; then
-    buildArgs+="--build-arg TARGET_ENVIRONMENTS=\"${TARGET_ENVIRONMENTS}\" "
+    buildArgs+="--build-arg TARGET_ENVIRONMENTS=\\\"${TARGET_ENVIRONMENTS}\\\" "
   fi
 
-  buildCommand="$buildCommand $buildArgs"
+  buildCommand+=" --set BUILD_ARGS=\"${buildArgs}\""
   echo "$buildCommand"
 }
 
@@ -48,6 +70,7 @@ fi
 if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
-azBuildCommand="$(GetBuildCommand)"
+
+GetBuildCommand > /tmp/azbuild.sh
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
-bash -c "$azBuildCommand"
+bash /tmp/azbuild.sh
