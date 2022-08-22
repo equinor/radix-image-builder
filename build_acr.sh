@@ -3,6 +3,7 @@ function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
   local buildArgs=''
   local ACR_TASK_NAME='radix-image-builder'
+  local CACHE_TO_OPTIONS="--cache-to=type=registry,ref=${DOCKER_REGISTRY}.azurecr.io/${REPOSITORY_NAME}:radix-cache-${BRANCH},mode=max"
 
   local buildCommand="az acr task run \
         --name ${ACR_TASK_NAME} \
