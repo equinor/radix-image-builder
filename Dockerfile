@@ -1,4 +1,5 @@
 FROM mcr.microsoft.com/azure-cli:2.38.0
+RUN apk add uuidgen gettext --no-cache
 WORKDIR /radix-image-builder/
 COPY build_acr.sh build_acr.sh
 

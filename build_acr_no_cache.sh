@@ -2,24 +2,21 @@
 function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
   local buildArgs=''
-  local ACR_TASK_NAME='radix-image-builder-with-cache-${RADIX_ZONE}'
-  local CACHE_TO_OPTIONS="--cache-to=type=registry,ref=${DOCKER_REGISTRY}.azurecr.io/${REPOSITORY_NAME}:radix-cache-${BRANCH},mode=max"
+  if [[ ${PUSH} == "--push" ]]; then
+    local ACR_TASK_NAME='radix-image-builder-${RADIX_ZONE}'
+  else
+    local ACR_TASK_NAME='radix-image-builder-build-only-${RADIX_ZONE}'
+  fi
 
   local buildCommand="az acr task run \
         --name ${ACR_TASK_NAME} \
         --registry ${DOCKER_REGISTRY} \
         --context ${CONTEXT} \
         --file ${CONTEXT}${DOCKER_FILE_NAME} \
-        --set DOCKER_REGISTRY=${DOCKER_REGISTRY} \
-        --set BRANCH=${BRANCH} \
         --set IMAGE=${IMAGE} \
         --set CLUSTERTYPE_IMAGE=${CLUSTERTYPE_IMAGE} \
         --set CLUSTERNAME_IMAGE=${CLUSTERNAME_IMAGE} \
-        --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME} \
-        --set PUSH=${PUSH} \
-        --set REPOSITORY_NAME=${REPOSITORY_NAME} \
-        --set CACHE=${CACHE} \
-        --set CACHE_TO_OPTIONS=${CACHE_TO_OPTIONS}"
+        --set DOCKER_FILE_NAME=${DOCKER_FILE_NAME}"
 
   if [[ -n "${SUBSCRIPTION_ID}" ]]; then
     buildCommand+=" --subscription ${SUBSCRIPTION_ID} "
