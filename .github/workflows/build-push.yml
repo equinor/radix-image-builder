@@ -4,6 +4,7 @@ on:
     branches:
       - master
       - release
+      - playground
 permissions:
   id-token: write
 jobs:
