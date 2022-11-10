@@ -62,6 +62,9 @@ if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
 
+if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
+  git --git-dir=$CONTEXT/.git --work-tree=$CONTEXT/.git reset --hard $RADIX_GIT_COMMIT_HASH || exit 1
+fi
 GetBuildCommand > /tmp/azbuild.sh
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
 bash /tmp/azbuild.sh
