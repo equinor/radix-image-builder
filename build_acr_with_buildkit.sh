@@ -2,6 +2,7 @@
 function GetBuildCommand() {
   local prefix="BUILD_SECRET_"
   local buildArgs=''
+  local secretArgs=''
   local ACR_TASK_NAME='radix-image-builder-with-cache-${RADIX_ZONE}'
   local CACHE_TO_OPTIONS="--cache-to=type=registry,ref=${DOCKER_REGISTRY}.azurecr.io/${REPOSITORY_NAME}:radix-cache-${BRANCH},mode=max"
 
@@ -29,15 +30,17 @@ function GetBuildCommand() {
   local envBuildSecret
   local secretName
   local secretValue
-
   while read -r line; do
       if [[ "$line" ]]; then
           keyValue=(${line//=/ })
-          envBuildSecret=${keyValue[0]}
-          secretName=${envBuildSecret#"$prefix"}
-          secretValue="$(printenv $envBuildSecret | base64 | tr -d \\n)"
-
-          buildArgs+="--build-arg $secretName=\"$secretValue\" "
+          export secretValue=${keyValue[0]}
+          export secretName=${secretValue#"$prefix"}
+          secret_file_path="$(uuidgen)"
+          printenv secretValue > ${CONTEXT}${secret_file_path}
+          secretArgs+="--secret id=${secretName},src=${secret_file_path} "
+          echo ${secret_file_path} >> .dockerignore
+          unset secretValue
+          unset secretName
       fi
   done <<< "$(env | grep 'BUILD_SECRET_')"
 
@@ -55,6 +58,7 @@ function GetBuildCommand() {
   fi
 
   buildCommand+=" --set BUILD_ARGS=\"${buildArgs}\""
+  buildCommand+=" --set SECRET_ARGS=\"${secretArgs}\""
   echo "$buildCommand"
 }
 
@@ -64,7 +68,11 @@ fi
 if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
+if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
+  git --git-dir=/workspace/.git --work-tree=/workspace/ reset --hard $RADIX_GIT_COMMIT_HASH || exit 1
+fi
 
 GetBuildCommand > /tmp/azbuild.sh
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
+
 bash /tmp/azbuild.sh
