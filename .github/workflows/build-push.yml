@@ -5,6 +5,7 @@ on:
       - master
       - release
       - playground
+      - buildah
 permissions:
   id-token: write
 jobs:
@@ -30,6 +31,7 @@ jobs:
       fail-fast: false
       matrix: 
         config: ${{ fromJson(needs.get-target-configs.outputs.target_configs) }}
+        script: [build-push-classic-image-builder.sh, build-push-buildah-image-builder.sh]
     steps:
     - uses: actions/checkout@v2
     - name: Persist environment from ${{ matrix.config }} across steps
@@ -48,5 +50,5 @@ jobs:
     
     - name: Build image
       run: |
-        $GITHUB_WORKSPACE/.github/workflows/scripts/build-push.sh
+        $GITHUB_WORKSPACE/.github/workflows/scripts/${{ matrix.script }}
 

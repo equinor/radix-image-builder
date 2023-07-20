@@ -1,11 +1,12 @@
 #!/bin/bash
 image_tag=${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${GITHUB_REF_NAME}-latest
+context="${GITHUB_WORKSPACE}/radix-classic-image-builder"
 az acr task run \
     --subscription ${AZURE_SUBSCRIPTION_ID} \
     --name radix-image-builder-internal \
     --registry ${ACR_NAME} \
-    --context ${GITHUB_WORKSPACE} \
-    --file ${GITHUB_WORKSPACE}/Dockerfile \
+    --context $context \
+    --file $context/Dockerfile \
     --set DOCKER_REGISTRY=${ACR_NAME} \
     --set BRANCH=${GITHUB_REF_NAME} \
     --set TAGS="--tag ${image_tag}" \
