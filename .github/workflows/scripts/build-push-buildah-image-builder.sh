@@ -1,6 +1,6 @@
 #!/bin/bash
 image_tag=${ACR_NAME}.azurecr.io/${CLASSIC_BUILDER_IMAGE_NAME}:${GITHUB_REF_NAME}-latest
-context="${GITHUB_WORKSPACE}/radix-classic-image-builder"
+context="${GITHUB_WORKSPACE}/buildah-image-builder"
 az acr task run \
     --subscription ${AZURE_SUBSCRIPTION_ID} \
     --name radix-image-builder-internal \
