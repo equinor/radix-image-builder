@@ -1,4 +1,6 @@
-buildah login --username ${BUILDAH_USERNAME} --password ${BUILDAH_PASSWORD} ${DOCKER_REGISTRY}
+#!/bin/bash
+set -e
+buildah login --username ${BUILDAH_USERNAME} --password ${BUILDAH_PASSWORD} ${DOCKER_REGISTRY}.azurecr.io
 buildah build --storage-driver=vfs --isolation=chroot --jobs 0 \
         --file ${CONTEXT}${DOCKER_FILE_NAME} \
         --tag ${IMAGE} \ 
