@@ -6,5 +6,5 @@ buildah build --storage-driver=vfs --isolation=chroot --jobs 0 \
         --tag ${IMAGE} \ 
         --tag ${CLUSTERTYPE_IMAGE} \
         --tag ${CLUSTERNAME_IMAGE} \
-        ${CONTEXT}
+        ${SECRET_ARGS} ${CONTEXT}
 buildah push --storage-driver=vfs --all ${IMAGE}
