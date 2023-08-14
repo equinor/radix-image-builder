@@ -4,13 +4,13 @@ buildah login --username ${BUILDAH_USERNAME} --password ${BUILDAH_PASSWORD} ${DO
 #debug line below
 echo buildah build --storage-driver=vfs --isolation=chroot --jobs 0 \
         ${SECRET_ARGS} --file ${CONTEXT}${DOCKER_FILE_NAME} \
-        --tag ${IMAGE} \ 
+        --tag ${IMAGE} \
         --tag ${CLUSTERTYPE_IMAGE} \
         --tag ${CLUSTERNAME_IMAGE} \
         ${CONTEXT}
 buildah build --storage-driver=vfs --isolation=chroot --jobs 0 \
         ${SECRET_ARGS} --file ${CONTEXT}${DOCKER_FILE_NAME} \
-        --tag ${IMAGE} \ 
+        --tag ${IMAGE} \
         --tag ${CLUSTERTYPE_IMAGE} \
         --tag ${CLUSTERNAME_IMAGE} \
         ${CONTEXT}
