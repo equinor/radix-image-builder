@@ -1,4 +1,4 @@
-FROM quay.io/buildah/stable:v1.30.0
+FROM quay.io/buildah/stable:v1.31
 RUN yum install strace -y
 COPY cmd.sh /
 CMD /cmd.sh
