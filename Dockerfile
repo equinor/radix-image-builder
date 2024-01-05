@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/azure-cli:2.38.0
+FROM mcr.microsoft.com/azure-cli:2.55.0
+RUN apk add --no-cache git
 WORKDIR /radix-image-builder/
 COPY build_acr.sh build_acr.sh
 
