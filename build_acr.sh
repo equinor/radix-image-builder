@@ -62,6 +62,11 @@ if [[ -z "${SP_SECRET}" ]]; then
   SP_SECRET=$(cat ${AZURE_CREDENTIALS} | jq -r '.password')
 fi
 
-GetBuildCommand > /tmp/azbuild.sh
+if [[ -n "${RADIX_GIT_COMMIT_HASH}" ]]; then
+  git --git-dir=/workspace/.git --work-tree=/workspace/ reset --hard $RADIX_GIT_COMMIT_HASH || exit 1
+fi
+
+TEMPFILE="$(mktemp -u).sh" # We need a random filename since emptyDir /tmp is mounted to multiple build containers
+GetBuildCommand > "$TEMPFILE"
 az login --service-principal -u ${SP_USER} -p ${SP_SECRET} --tenant ${TENANT}
-bash /tmp/azbuild.sh
+bash "$TEMPFILE"

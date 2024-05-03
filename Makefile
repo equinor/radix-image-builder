@@ -14,6 +14,7 @@ test:
 		-e CLUSTERNAME_IMAGE=radixdev.azurecr.io/radix-image-builder-test:3 \
 		-e SUBSCRIPTION_ID=16ede44b-1f74-40a5-b428-46cca9a5741b \
 		-e BRANCH=main \
+		-e RADIX_ZONE=dev \
 		-e TARGET_ENVIRONMENTS=dev,qa \
 		radixdev.azurecr.io/radix-image-builder:dev
 	rm ./test/credentials.json
