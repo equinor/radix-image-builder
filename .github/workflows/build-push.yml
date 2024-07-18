@@ -5,7 +5,6 @@ on:
     - master
     - release
     - set-arm-platform
-
   workflow_dispatch:
 permissions:
   id-token: write
