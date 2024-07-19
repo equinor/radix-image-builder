@@ -128,9 +128,7 @@ jobs:
       if: matrix.target.ref == github.ref
       id: build-tag
       run: |
-        sha=${GITHUB_SHA::8}
-        ts=$(date +%s)
-        echo "tag=${GITHUB_REF_NAME}-${sha}-${ts}" >> $GITHUB_OUTPUT
+        echo "tag=${GITHUB_REF_NAME}-latest" >> $GITHUB_OUTPUT
 
     - name: Extract labels from metadata for Docker
       if: matrix.target.ref == github.ref
