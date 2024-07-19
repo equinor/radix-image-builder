@@ -1,6 +1,6 @@
 .PHONY: test build run-test-image
 build:
-	docker build -t radixdev.azurecr.io/radix-image-builder:dev .
+	docker buildx build --platform linux/arm64 -t radixdev.azurecr.io/radix-image-builder:dev .
 
 test:
 	rm -f ./test/credentials.json
@@ -24,3 +24,5 @@ push-dev:
 
 run-test-image:
 	docker run radixdev.azurecr.io/radix-image-builder-test:1
+
+deploy: build push-dev
