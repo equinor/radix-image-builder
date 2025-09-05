@@ -21,18 +21,6 @@ All changes must be merged into the `master` branch using **pull requests** with
 
 The squash commit message must follow the [Conventional Commits](https://www.conventionalcommits.org/en/about/) specification.
 
-### Running locally
-
-The following env vars are needed. Useful default values in brackets.
-
-```shell
-LOG_PRETTY=True ISSUER=https://issuer-url/ AUDIENCE=some-audience SUBJECTS=default,kubernetes,somename go run .
-```
-
-### Validate code
-
-- run `make lint`
-
 ## Release Process
 
 Merging a pull request into `master` triggers the **Prepare release pull request** workflow.  
