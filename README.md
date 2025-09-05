@@ -35,7 +35,7 @@ LOG_PRETTY=True ISSUER=https://issuer-url/ AUDIENCE=some-audience SUBJECTS=defau
 
 ## Release Process
 
-Merging a pull request into `mamastern` triggers the **Prepare release pull request** workflow.  
+Merging a pull request into `master` triggers the **Prepare release pull request** workflow.  
 This workflow analyzes the commit messages to determine whether the version number should be bumped — and if so, whether it's a major, minor, or patch change.  
 
 It then creates two pull requests:
