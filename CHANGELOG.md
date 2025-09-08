@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ## New Contributors ❤️
 
+* @github-actions[bot] made their first contribution in [#65](https://github.com/equinor/radix-image-builder/pull/65)
 * @nilsgstrabo made their first contribution in [#63](https://github.com/equinor/radix-image-builder/pull/63)
 * @Richard87 made their first contribution in [#60](https://github.com/equinor/radix-image-builder/pull/60)
 * @satr made their first contribution in [#57](https://github.com/equinor/radix-image-builder/pull/57)
