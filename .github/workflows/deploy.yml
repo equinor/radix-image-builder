@@ -12,6 +12,7 @@ jobs:
     outputs:
       version: ${{ steps.metadata.outputs.version }}
       release-exist: ${{ steps.metadata.outputs.release_exist }}
+      is-stable-release: ${{ steps.metadata.outputs.is_stable_release }}
     steps:
       - uses: actions/checkout@v4
       - name: Metadata
@@ -29,8 +30,14 @@ jobs:
             release_exist="false"
           fi
 
+          is_stable_release="false"
+          if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]$ ]]; then
+              is_stable_release="true"
+          fi
+
           echo "version="$version"" >>"$GITHUB_OUTPUT"
           echo "release_exist="$release_exist"" >>"$GITHUB_OUTPUT"
+          echo "is_stable_release="$is_stable_release"" >>"$GITHUB_OUTPUT"
           
   deploy-docker:
     runs-on: ubuntu-latest
@@ -53,7 +60,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: "${{ env.CONTAINER_REGISTRY }}/equinor/radix/image-builder"
-          tags: ${{ needs.metadata.outputs.version }}
+          tags: |
+            type=raw,value=${{ needs.metadata.outputs.version }}
+            type=raw,value=latest,enable=${{ needs.metadata.outputs.is-stable-release }}
       - name: Build and push container images
         uses: docker/build-push-action@v6
         with:
