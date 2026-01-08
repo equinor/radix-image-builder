@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: radix-image-builder
   title: Radix Image Builder
-  description: "The radix-image-builder gives radix-pipeline access to build the images using ACR build functionality"
+  description: "The radix-image-builder gives radix-pipeline access to build images using ACR build functionality"
   annotations:
     github.com/project-slug: equinor/radix-image-builder
 spec:
