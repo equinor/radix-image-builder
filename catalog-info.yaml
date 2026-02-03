@@ -9,6 +9,6 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: omnia-radix
+  owner: team-radix
   system: Radix
 
