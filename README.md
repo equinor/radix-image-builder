@@ -1,5 +1,8 @@
-[![Build Status](https://github.com/equinor/radix-image-builder/workflows/radix-image-builder-build/badge.svg)](https://github.com/equinor/radix-image-builder/actions?query=workflow%3Aradix-image-builder-build)
 # radix-image-builder
+
+> [!IMPORTANT]  
+> **Update, July 2026:** This repository is no longer maintained. Code/function moved to operator.
+
 
 The radix-image-builder gives radix-pipeline access to build the images using ACR build functionality.
 
